@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QuietCut · Tutorial Audio Editor</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/languages.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="QuietCut home"><span class="brand-icon">≋</span>QuietCut<span class="beta">LOCAL</span></a>
+  <div class="language-control"><label for="language">Language</label><select id="language" data-no-translate><option value="en">English</option><option value="fr">Français</option><option value="zh-CN">简体中文</option></select></div>
+  <div class="workspace-label">YOUR WORKSPACE</div>
+  <button id="import" class="import-btn">＋ Import a video</button><button id="browserImport" class="text-button" style="margin-top:8px">Use browser file picker</button><input id="file" type="file" accept="video/*,.mkv,.mov,.avi,.webm" hidden>
+  <div class="sidebar-heading">RECENT PROJECTS <span id="projectCount">0</span></div>
+  <nav id="projects" aria-label="Saved projects"></nav>
+  <div class="sidebar-footer"><span class="live-dot"></span>Processing stays on this computer<br><small>Made for a clearer tutorial.</small></div>
+</aside>
+<main>
+  <header><div><div class="eyebrow">TUTORIAL AUDIO EDITOR</div><h1 id="title">A little less noise.<br>A lot more clarity.</h1></div><div class="header-actions"><span id="saved" class="pill">Ready to import</span><button id="export" class="primary" disabled>Export video ↗</button></div></header>
+  <div id="notice" role="status" class="notice" hidden></div>
+  <section id="empty" class="empty"><div class="empty-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h2>Let your voice come through.</h2><p>Bring in a tutorial, soften background noise,<br>and turn down distracting breaths.</p><button id="emptyImport" class="primary">Choose your video</button><span class="hint">MP4, MOV, MKV, WebM & more · Local processing</span></section>
+  <section id="editor" hidden>
+    <div id="trackPanel" class="track-panel"><label for="track">Audio track</label><select id="track"></select><button id="prepare" class="secondary">Prepare selected track</button></div>
+    <div class="editor-grid">
+      <div class="left-column">
+        <section class="preview-card"><div class="card-heading"><span><span class="live-dot"></span> VIDEO PREVIEW</span><div class="compare" role="group" aria-label="Audio comparison"><button id="original" class="active">Original</button><button id="cleaned" disabled>Cleaned</button></div></div><div class="video-stage"><video id="video" controls playsinline preload="metadata" muted></video><div id="videoPlaceholder">Your preview will appear here</div><span id="audioBadge">ORIGINAL AUDIO</span></div></section>
+        <section class="timeline-card"><div class="card-heading"><span>AUDIO TIMELINE</span><span id="time">00:00.00 / 00:00.00</span></div><div class="wave-wrap"><canvas id="wave" aria-label="Audio waveform: drag to select a breath, click to seek" role="img"></canvas></div><div class="timeline-footer"><span><b class="legend"></b> Breath reduction</span><span>Click to seek · Drag to select</span></div></section>
+        <section class="regions-card"><div class="card-heading"><span>BREATH REGIONS <b id="regionCount" class="count">0</b></span><button id="deleteProject" class="text-button danger">Delete project</button></div><div id="regions" class="regions-empty">Select a breath in the waveform, then add a region.</div></section>
+      </div>
+      <aside class="controls">
+        <section class="control-card"><div class="section-icon">≋</div><h2>Background noise</h2><p>Soften steady hiss, hum, and fan noise.</p><label for="noise">REDUCTION STRENGTH</label><select id="noise" disabled><option value="off">Off · Keep original</option><option value="gentle" selected>Gentle · Natural voice</option><option value="medium">Medium · Noisy room</option><option value="strong">Strong · More reduction</option></select><div class="profile-actions"><button id="profile" class="text-button" disabled>Use selection as noise sample</button><button id="clearProfile" class="text-button" disabled>Clear</button></div><small id="profileInfo">Optional: select a moment with only background noise.</small></section>
+        <section class="control-card"><div class="section-icon">⌁</div><h2>Breath reduction</h2><p>Lower a selected breath with a smooth fade.</p><div class="time-fields"><label>START (SECONDS)<input id="start" type="number" min="0" step="0.01" value="0" disabled></label><label>END (SECONDS)<input id="end" type="number" min="0" step="0.01" value="0" disabled></label></div><div class="range-heading"><label for="reduction">REDUCTION</label><output id="reductionValue">−12 dB</output></div><input id="reduction" type="range" min="0" max="36" value="12" disabled><div class="range-labels"><span>Subtle</span><span>Quieter</span></div><button id="add" class="secondary full" disabled>＋ Add breath region</button><button id="update" class="text-button full" hidden>Update selected region</button><small>Timing stays intact. Your words and screen stay in sync.</small></section>
+        <section class="render-card"><button id="render" class="primary full" disabled>✧ Generate cleaned preview</button><p id="previewState">Prepare your video to begin.</p><div id="jobPanel" hidden><progress id="progress" max="1"></progress><div class="job-row"><span id="jobMessage"></span><button id="cancel" class="text-button">Cancel</button></div></div><a id="download" class="download" hidden>↓ Download cleaned MP4</a></section>
+      </aside>
+    </div>
+    <footer id="mediaInfo"></footer>
+  </section>
+</main>
+<audio id="audio" preload="auto"></audio>
+<dialog id="importDialog"><h2>Import a tutorial video</h2><p>Paste the full path to your video. In Windows Explorer, right-click the file and choose <strong>Copy as path</strong>.</p><label for="videoPath">VIDEO FILE PATH</label><input id="videoPath" type="text" placeholder="D:\Videos\tutorial.mp4" style="width:100%;padding:12px;margin-top:8px;background:#151915;color:#eef2e8;border:1px solid #526048;border-radius:7px"><p id="importError" role="alert" style="color:#efb9a6" hidden></p><small>This copies the selected video into your local editor project.</small><div class="dialog-actions"><button id="dismissImport" class="secondary">Cancel</button><button id="confirmImport" class="primary">Import video</button></div></dialog>
+<dialog id="exportDialog"><h2>Export your cleaned tutorial</h2><p>The MP4 will contain the video and your selected, cleaned audio track. Other audio tracks and subtitles are excluded.</p><p id="exportConversion"></p><div class="dialog-actions"><button id="dismissExport" class="secondary">Back to editor</button><button id="confirmExport" class="primary">Export MP4</button></div></dialog>
+<script src="/i18n.js"></script><script src="/app.js"></script>
+</body></html>
